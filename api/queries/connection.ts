@@ -1,14 +1,18 @@
-import { drizzle } from "drizzle-orm/mysql2";
-import mysql from "mysql2/promise";
-import { env } from "../lib/env";
-import * as schema from "../../db/schema";
+import { drizzle } from "drizzle-orm/d1";
+import * as schema from "@db/schema";
+import * as relations from "@db/relations";
 
-let _db: ReturnType<typeof drizzle<typeof schema>> | undefined;
+const fullSchema = { ...schema, ...relations };
 
+let instance: ReturnType<typeof drizzle<typeof fullSchema>> | undefined;
+
+// D1 binding is stashed on globalThis by the Worker entry (api/worker-entry.ts)
+// because bindings only arrive on the fetch handler's env, not as globals.
 export function getDb() {
-  if (!_db) {
-    const client = mysql.createPool(env.databaseUrl);
-    _db = drizzle(client, { schema, mode: "default" });
+  if (!instance) {
+    const d1 = (globalThis as any).__D1;
+    if (!d1) throw new Error("D1 database binding (DB) is not available");
+    instance = drizzle(d1, { schema: fullSchema });
   }
-  return _db;
+  return instance;
 }
