@@ -17,7 +17,7 @@
 // the correlation is added for free. Node's ALS is the right primitive here —
 // it survives `await` boundaries, so a handler that logs after an await still
 // carries the id of the request that started it.
-import { AsyncLocalStorage } from "async_hooks";
+import { AsyncLocalStorage } from "node:async_hooks";
 
 export const REQUEST_ID_HEADER = "x-request-id";
 
