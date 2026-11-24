@@ -1,0 +1,60 @@
+{
+  "id": "00000000-0000-0000-0000-000000000000",
+  "prevId": "00000000-0000-0000-0000-000000000000",
+  "version": "7",
+  "dialect": "mysql",
+  "tables": {
+    "users": {
+      "name": "users",
+      "columns": {
+        "id": { "name": "id", "type": "serial", "primaryKey": true, "notNull": true },
+        "username": { "name": "username", "type": "varchar(32)", "notNull": true },
+        "passwordHash": { "name": "password_hash", "type": "varchar(255)", "notNull": true },
+        "createdAt": { "name": "created_at", "type": "timestamp", "notNull": true, "default": "now()" }
+      },
+      "indexes": { "users_username_unique": { "name": "users_username_unique", "columns": ["username"], "isUnique": true } },
+      "foreignKeys": {},
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {}
+    },
+    "files": {
+      "name": "files",
+      "columns": {
+        "id": { "name": "id", "type": "serial", "primaryKey": true, "notNull": true },
+        "ownerId": { "name": "owner_id", "type": "bigint unsigned", "notNull": true },
+        "name": { "name": "name", "type": "varchar(255)", "notNull": true },
+        "slug": { "name": "slug", "type": "varchar(255)", "notNull": true },
+        "key": { "name": "key", "type": "varchar(512)", "notNull": true },
+        "size": { "name": "size", "type": "bigint unsigned", "notNull": true },
+        "contentType": { "name": "content_type", "type": "varchar(128)", "notNull": true, "default": "application/octet-stream" },
+        "isPublic": { "name": "is_public", "type": "boolean", "notNull": true, "default": true },
+        "createdAt": { "name": "created_at", "type": "timestamp", "notNull": true, "default": "now()" },
+        "updatedAt": { "name": "updated_at", "type": "timestamp", "notNull": true, "default": "now()" }
+      },
+      "indexes": {},
+      "foreignKeys": { "files_owner_id_users_id_fk": { "name": "files_owner_id_users_id_fk", "tableFrom": "files", "tableTo": "users", "columnsFrom": ["owner_id"], "columnsTo": ["id"], "onDelete": "no action", "onUpdate": "no action" } },
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {}
+    },
+    "images": {
+      "name": "images",
+      "columns": {
+        "id": { "name": "id", "type": "serial", "primaryKey": true, "notNull": true },
+        "ownerId": { "name": "owner_id", "type": "bigint unsigned", "notNull": true },
+        "name": { "name": "name", "type": "varchar(255)", "notNull": true },
+        "slug": { "name": "slug", "type": "varchar(255)", "notNull": true },
+        "key": { "name": "key", "type": "varchar(512)", "notNull": true },
+        "size": { "name": "size", "type": "bigint unsigned", "notNull": true },
+        "contentType": { "name": "content_type", "type": "varchar(128)", "notNull": true },
+        "usesQuota": { "name": "uses_quota", "type": "boolean", "notNull": true, "default": false },
+        "createdAt": { "name": "created_at", "type": "timestamp", "notNull": true, "default": "now()" }
+      },
+      "indexes": {},
+      "foreignKeys": { "images_owner_id_users_id_fk": { "name": "images_owner_id_users_id_fk", "tableFrom": "images", "tableTo": "users", "columnsFrom": ["owner_id"], "columnsTo": ["id"], "onDelete": "no action", "onUpdate": "no action" } },
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {}
+    }
+  },
+  "schemas": {},
+  "internal": { "tables": {}, "indexes": {} }
+}
