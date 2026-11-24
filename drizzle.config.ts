@@ -1,13 +1,16 @@
 import { defineConfig } from "drizzle-kit";
-import { config } from "dotenv";
 
-config();
-
+// Workers 分支：D1 (SQLite)。建表不依赖本配置 —— 直接使用 db/schema.sql：
+//   npx wrangler d1 execute xingbo-static-hosting --file=db/schema.sql
+// 本配置仅用于需要 drizzle-kit 生成新迁移时（driver: d1-http）。
 export default defineConfig({
-  dialect: "mysql",
   schema: "./db/schema.ts",
   out: "./db/migrations",
+  dialect: "sqlite",
+  driver: "d1-http",
   dbCredentials: {
-    url: process.env.DATABASE_URL || "",
+    accountId: process.env.CLOUDFLARE_ACCOUNT_ID ?? "",
+    databaseId: process.env.D1_DATABASE_ID ?? "",
+    token: process.env.CLOUDFLARE_API_TOKEN ?? "",
   },
 });
