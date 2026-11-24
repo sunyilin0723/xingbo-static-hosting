@@ -100,3 +100,67 @@ NODE_ENV=production node dist/boot.js
 - 每人文件托管 20 个、单文件 20MB（硬限制）
 - 图床小图（≤200KB）不限量；大图高级空间 50MB
 - 仅支持平台网关可达的对象存储；导出代码后需替换 `api/lib/storage.ts` 适配你自己的 S3 / OSS
+
+---
+
+## 部署到 Cloudflare Workers（本分支：`cloudflare-workers`）
+
+> 本分支是 Workers 适配版：数据库从 MySQL 换成 **D1 (SQLite)**，对象存储从平台 SDK 换成 **R2**，前端作为 Workers Static Assets 托管。`main` 分支（Kimi 平台版）不受影响。
+>
+> 需要资源：D1 数据库 ×1、R2 桶 ×1、Worker ×1（全部在免费额度内；注意 R2 需先开通，免费 10GB 存储 / 每月 100 万次 B 类操作）。
+
+### 1. 创建资源
+
+```bash
+# D1 数据库
+npx wrangler d1 create xingbo-static-hosting
+# R2 桶（需先在 Dashboard 开通 R2）
+npx wrangler r2 bucket create xingbo-hosting-r2-9afd2a08 --location apac
+```
+
+### 2. 建表
+
+```bash
+npx wrangler d1 execute xingbo-static-hosting --file=db/schema.sql
+```
+
+### 3. 配置
+
+把 `wrangler.jsonc` 里的 `database_id` 换成第 1 步返回的 ID，然后设置 JWT 密钥（secret，不要写进 vars）：
+
+```bash
+npx wrangler secret put APP_SECRET
+# 输入一段足够长的随机字符串
+```
+
+### 4. 构建并部署
+
+```bash
+npm install
+npx vite build            # 前端 → dist/public
+npx esbuild api/worker-entry.ts --bundle --format=esm --platform=neutral \
+  --outfile=dist/worker.mjs '--alias:@db=./db' '--alias:@contracts=./contracts' \
+  --external:node:crypto --external:node:async_hooks --external:node:buffer
+npx wrangler deploy
+```
+
+部署后地址为 `https://xingbo-static-hosting.workers.dev`。
+
+### 与 main 分支的差异
+
+| 文件 | 差异 |
+|---|---|
+| `db/schema.ts` | MySQL → SQLite（D1），TS 字段名不变，路由零改动 |
+| `db/schema.sql` | 新增：D1 建表 SQL |
+| `api/queries/connection.ts` | drizzle mysql2 → drizzle-orm/d1（binding 从 globalThis 读取） |
+| `api/lib/storage.ts` | 平台 SDK → R2 实现，接口完全一致；**无内容审核** |
+| `api/app.ts` / `api/worker-entry.ts` | 新增：Hono app 抽出 + Worker 入口（API 路由 / ASSETS 静态资源） |
+| `api/boot.ts` | 仅本地开发用（Node dev server） |
+| `api/lib/env.ts` / `logger.ts` | 去 dotenv / 去 fs（Worker 无文件系统） |
+| `wrangler.jsonc` | 新增：部署配置参考 |
+
+### Workers 版的已知限制
+
+- Worker 内存上限 128MB：20MB 文件上传（base64 后约 27MB JSON）接近上限，超大文件上传可能失败
+- R2 不做内容审核（平台 SDK 有同步审核并拒绝 APK 公开发布，Workers 版没有这一层）
+- 部署后是全新空数据库，不迁移 Kimi 平台上的用户数据
