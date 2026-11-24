@@ -1,5 +1,1 @@
-// 前后端共享的业务类型
-export interface PublicUser {
-  id: number;
-  username: string;
-}
+export const APP_NAME = "星泊静态托管";
