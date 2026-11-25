@@ -1,7 +1,5 @@
 {
-  // Cloudflare Workers 部署配置（参考）。
-  // 本项目通过 Cloudflare API 直接部署（见 README「部署到 Cloudflare Workers」），
-  // 本文件等价描述了相同的 bindings / 兼容标志，供 wrangler CLI 用户使用。
+  // Cloudflare Workers 部署配置。由 GitHub Actions 使用（见 .github/workflows/deploy-workers.yml）。
   "name": "xingbo-static-hosting",
   "main": "dist/worker.mjs",
   "compatibility_date": "2026-11-20",
@@ -14,8 +12,7 @@
     {
       "binding": "DB",
       "database_name": "xingbo-static-hosting",
-      "database_id": "<创建后填入 D1 database id>",
-      "migrations_dir": "db/migrations-d1"
+      "database_id": "50ca5cfb-51c8-42c1-929b-81cc9d1c52a9"
     }
   ],
   "r2_buckets": [
@@ -27,7 +24,6 @@
   "vars": {
     "APP_ID": "xingbo-static-hosting"
   },
-  // APP_SECRET 是 secret，不要用 vars 明文写：
-  //   wrangler secret put APP_SECRET
+  // APP_SECRET 是 secret，不要用 vars 明文写：workflow 里用 wrangler secret put 注入。
   "workers_dev": true
 }
