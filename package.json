@@ -8,6 +8,8 @@
     "build": "vite build && esbuild api/boot.ts --platform=node --bundle --format=esm --outdir=dist --banner:js=\"import { createRequire } from 'module';const require = createRequire(import.meta.url);\"",
     "build:client": "vite build",
     "build:server": "esbuild api/boot.ts --platform=node --bundle --format=esm --outdir=dist --banner:js=\"import { createRequire } from 'module';const require = createRequire(import.meta.url);\"",
+    "build:worker": "vite build && esbuild api/worker-entry.ts --bundle --format=esm --platform=neutral --outfile=dist/worker.mjs --alias:@db=./db --alias:@contracts=./contracts --external:node:crypto --external:node:async_hooks --external:node:buffer",
+    "deploy": "wrangler deploy",
     "start": "NODE_ENV=production node dist/boot.js",
     "check": "tsc -b --noEmit",
     "format": "prettier --write .",
@@ -98,7 +100,6 @@
     "typescript": "~5.7.2",
     "typescript-eslint": "^8.22.0",
     "vite": "^7.3.7",
-    "vitest": "^3.0.5",
-    "zod": "^3.24.2"
+    "vitest": "^3.0.5"
   }
 }
