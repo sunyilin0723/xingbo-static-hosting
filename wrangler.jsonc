@@ -12,13 +12,13 @@
     {
       "binding": "DB",
       "database_name": "xingbo-static-hosting",
-      "database_id": "50ca5cfb-51c8-42c1-929b-81cc9d1c52a9"
+      "database_id": "1888419d-d7c4-4b45-b6b4-60d22d8a8c33"
     }
   ],
   "r2_buckets": [
     {
       "binding": "BUCKET",
-      "bucket_name": "xingbo-hosting-r2-9afd2a08"
+      "bucket_name": "xingbo-static-hosting"
     }
   ],
   "vars": {
