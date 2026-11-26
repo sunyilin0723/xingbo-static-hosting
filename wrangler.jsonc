@@ -1,7 +1,7 @@
 {
   // Cloudflare Workers 部署配置。由 GitHub Actions 使用（见 .github/workflows/deploy-workers.yml）。
   "name": "xingbo-static-hosting",
-  "main": "dist/boot.js",
+  "main": "dist/worker.mjs",
   "compatibility_date": "2026-11-20",
   "compatibility_flags": ["nodejs_compat"],
   "assets": {
