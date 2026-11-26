@@ -45,8 +45,8 @@ authRoutes.post("/register", async (c) => {
     .insert(users)
     .values({ username, passwordHash: hashPassword(password) });
   const insertId = Number(
-    (result as unknown as { insertId: bigint }).insertId ??
-      (result as unknown as [{ insertId: bigint }])[0]?.insertId,
+    (result as unknown as { meta?: { last_row_id?: number } }).meta
+      ?.last_row_id ?? 0,
   );
   const token = signToken(insertId, username);
   setAuthCookie(c, token);
