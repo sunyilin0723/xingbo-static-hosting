@@ -9,10 +9,18 @@ export function useAuth() {
     if (!me.isLoading) setLoading(false);
   }, [me.isLoading]);
 
-  return { user: me.data ?? null, loading };
+  const user = me.data ?? null;
+  return {
+    user,
+    loading,
+    isLoading: me.isLoading,
+    isAuthenticated: !!user,
+  };
 }
 
-export async function logout() {
+export async function apiLogout() {
   await fetch("/api/auth/logout", { method: "POST" });
   window.location.href = "/login";
 }
+
+export const logout = apiLogout;
